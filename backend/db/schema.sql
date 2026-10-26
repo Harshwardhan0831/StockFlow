@@ -1,0 +1,60 @@
+CREATE DATABASE IF NOT EXISTS `stock_trading`;
+USE `stock_trading`;
+
+CREATE TABLE IF NOT EXISTS users (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255),
+  google_id VARCHAR(255) UNIQUE,
+  name VARCHAR(255),
+  avatar VARCHAR(1000),
+  provider ENUM('local','google') NOT NULL DEFAULT 'local',
+  is_verified TINYINT(1) DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS refresh_tokens (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  token VARCHAR(2000) NOT NULL,
+  expires_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS watchlists (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  symbol VARCHAR(20) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  UNIQUE KEY unique_user_symbol (user_id, symbol)
+);
+
+CREATE TABLE IF NOT EXISTS orders (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  symbol VARCHAR(20) NOT NULL,
+  side ENUM('buy','sell') NOT NULL,
+  quantity INT NOT NULL,
+  price DECIMAL(12,4) NOT NULL,
+  total DECIMAL(12,4) NOT NULL,
+  status ENUM('pending','filled','cancelled') DEFAULT 'filled',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS mock_stocks (
+  symbol VARCHAR(20) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  exchange VARCHAR(50),
+  sector VARCHAR(100),
+  current_price DECIMAL(12,4) NOT NULL,
+  previous_close DECIMAL(12,4),
+  change_amount DECIMAL(12,4),
+  change_percent DECIMAL(8,4),
+  volume BIGINT,
+  market_cap BIGINT,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
