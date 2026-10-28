@@ -1,4 +1,7 @@
-const isProd = process.env.NODE_ENV === 'production';
+const isProd =
+  process.env.NODE_ENV === 'production' ||
+  process.env.COOKIE_SECURE === 'true' ||
+  Boolean(process.env.RENDER);
 
 function setAuthCookies(res, accessToken, refreshToken) {
   res.cookie('access_token', accessToken, {
@@ -18,8 +21,16 @@ function setAuthCookies(res, accessToken, refreshToken) {
 }
 
 function clearAuthCookies(res) {
-  res.clearCookie('access_token', { path: '/' });
-  res.clearCookie('refresh_token', { path: '/' });
+  res.clearCookie('access_token', {
+    path: '/',
+    secure: isProd,
+    sameSite: isProd ? 'None' : 'Lax',
+  });
+  res.clearCookie('refresh_token', {
+    path: '/',
+    secure: isProd,
+    sameSite: isProd ? 'None' : 'Lax',
+  });
 }
 
 module.exports = { setAuthCookies, clearAuthCookies };

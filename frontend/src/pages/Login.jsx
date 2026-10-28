@@ -112,7 +112,10 @@ export default function Login() {
             <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.5l6.6 5.6C41.6 36.5 44 30.7 44 24c0-1.3-.1-2.3-.4-3.5z" />
           </svg>
         }
-        onClick={() => { window.location.href = 'http://localhost:5000/api/oauth/google'; }}
+        onClick={() => {
+          const apiBase = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace(/\/+$/, '');
+          window.location.href = `${apiBase}/oauth/google`;
+        }}
         sx={{
           py: 1.4,
           fontSize: '0.98rem',
