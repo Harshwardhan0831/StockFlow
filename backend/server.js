@@ -6,6 +6,7 @@ const http = require('http');
 const { WebSocketServer } = require('ws');
 
 const pool = require('./db/connection');
+const { initDb } = require('./db/init');
 require('./config/passport');
 
 const routes = require('./routes');
@@ -81,7 +82,8 @@ server.listen(PORT, async () => {
   try {
     await pool.query('SELECT 1');
     console.log('Database connected');
+    await initDb(pool);
   } catch (err) {
-    console.error('Database connection failed:', err.message);
+    console.error('Database connection or initialization failed:', err.message);
   }
 });
